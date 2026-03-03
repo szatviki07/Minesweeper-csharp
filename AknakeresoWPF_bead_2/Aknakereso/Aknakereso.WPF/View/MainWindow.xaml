@@ -1,0 +1,113 @@
+﻿<Window x:Class="Aknakereso.WPF.View.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:Aknakereso.WPF.ViewModel"
+        Title="Aknakereső játék" Height="600" Width="600" MinHeight="500" MinWidth="500">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <!-- Menu -->
+            <RowDefinition Height="Auto" />
+            
+            <!-- Jatektabla -->
+            <RowDefinition Height="*" />
+            
+            <!-- Statuszsor -->
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Menu -->
+        <Menu Grid.Row="0">
+            <MenuItem Header="File">
+                <MenuItem Header="Új játék (10x10)" Command="{Binding MediumBoardCommand}" />
+                <Separator />
+                <MenuItem Header="Játék mentése..." Command="{Binding SaveGameCommand}" />
+                <MenuItem Header="Játék betöltése..." Command="{Binding LoadGameCommand}" />
+            </MenuItem>
+            <MenuItem Header="Beállítások">
+                <MenuItem Header="6x6" Command="{Binding SmallBoardCommand}" />
+                <MenuItem Header="10x10" Command="{Binding MediumBoardCommand}" />
+                <MenuItem Header="16x16" Command="{Binding LargeBoardCommand}" />
+            </MenuItem>
+        </Menu>
+
+        <!-- Jatektabla -->
+        <ItemsControl Grid.Row="1" ItemsSource="{Binding Fields}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <UniformGrid Rows="{Binding TableSize}" Columns="{Binding TableSize}" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+
+            <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="{x:Type vm:AknakeresoField}">
+                    <Button Content="{Binding Text}"
+                            FontWeight="Bold"
+                            FontSize="18"
+                            Margin="1"
+                            Command="{Binding RevealCommand}">
+                        <!-- bal klikk (alap) - felfedes -->
+
+
+                        <!-- jobb klikk - zaszlozas -->
+                        <Button.InputBindings>
+                            <MouseBinding MouseAction="RightClick" Command="{Binding FlagCommand}" />
+                        </Button.InputBindings>
+
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Background" Value="#FFF0F0F0" />
+                                <Setter Property="Foreground" Value="Black" />
+                                <Setter Property="BorderBrush" Value="Gray" />
+
+                                <Style.Triggers>
+                                    <!-- zaszlozott mezo -->
+                                    <DataTrigger Binding="{Binding IsFlagged}" Value="True">
+                                        <Setter Property="Background" Value="#FFFFE680" />
+                                    </DataTrigger>
+
+                                    <!-- felfedett mezo -->
+                                    <DataTrigger Binding="{Binding IsRevealed}" Value="True">
+                                        <Setter Property="Background" Value="#FFF3F3F3" />
+                                        <Setter Property="Foreground" Value="#FF888888" />
+                                        <Setter Property="IsEnabled" Value="False" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+
+                        <!-- kattintas animacio -->
+                        <Button.RenderTransform>
+                            <ScaleTransform ScaleX="1" ScaleY="1" />
+                        </Button.RenderTransform>
+
+                        <Button.Triggers>
+                            <EventTrigger RoutedEvent="Button.Click">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Duration="0:00:00.1"
+                                                         From="1" To="0.8"
+                                                         AutoReverse="True"
+                                                         Storyboard.TargetProperty="(RenderTransform).(ScaleTransform.ScaleX)" />
+                                        <DoubleAnimation Duration="0:00:00.1"
+                                                         From="1" To="0.8"
+                                                         AutoReverse="True"
+                                                         Storyboard.TargetProperty="(RenderTransform).(ScaleTransform.ScaleY)" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </Button.Triggers>
+                    </Button>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <!-- Statuszsor -->
+        <StatusBar Grid.Row="2">
+            <StatusBarItem>
+                <TextBlock Text="{Binding CurrentPlayer}" FontWeight="Bold" />
+            </StatusBarItem>
+        </StatusBar>
+
+    </Grid>
+</Window>

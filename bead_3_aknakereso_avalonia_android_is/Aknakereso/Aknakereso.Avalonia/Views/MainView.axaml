@@ -1,0 +1,95 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:Aknakereso.Avalonia.ViewModels"
+             xmlns:v="clr-namespace:Aknakereso.Avalonia.Views"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Aknakereso.Avalonia.Views.MainView"
+             x:DataType="vm:AknakeresoViewModel"
+             d:DataContext="{x:Static v:DesignData.ViewModel}">
+
+  <Grid>
+      <Grid.RowDefinitions>
+          <!-- Menu -->
+          <RowDefinition Height="Auto" />
+            
+          <!-- Jatektabla -->
+          <RowDefinition Height="*" />
+            
+          <!-- Statuszsor -->
+          <RowDefinition Height="Auto" />
+      </Grid.RowDefinitions>
+
+      <!-- Menu -->
+      <Menu Grid.Row="0">
+          <MenuItem Header="File">
+              <MenuItem Header="Uj jatek (10x10)" Command="{Binding MediumBoardCommand}" />
+              <Separator />
+              <MenuItem Header="Jatek mentese..." Command="{Binding SaveGameCommand}" />
+              <MenuItem Header="Jatek betoltese..." Command="{Binding LoadGameCommand}" />
+          </MenuItem>
+          <MenuItem Header="Beallitasok">
+              <MenuItem Header="6x6" Command="{Binding SmallBoardCommand}" />
+              <MenuItem Header="10x10" Command="{Binding MediumBoardCommand}" />
+              <MenuItem Header="16x16" Command="{Binding LargeBoardCommand}" />
+          </MenuItem>
+      </Menu>
+
+
+    <!-- Jatektabla -->
+    <Viewbox Grid.Row="1">
+      <ItemsControl ItemsSource="{Binding Fields}">
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate>
+            <UniformGrid Rows="{Binding TableSize}" Columns="{Binding TableSize}" />
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+
+        <ItemsControl.ItemTemplate>
+          <DataTemplate x:DataType="vm:AknakeresoField">
+            <Border PointerPressed="OnPointerPressed"
+                    PointerReleased="OnPointerReleased"
+                    Width="40" Height="40"
+                    Margin="1"
+                    Classes.IsRevealed="{Binding IsRevealed}"
+                    Classes.IsFlagged="{Binding IsFlagged}"
+                    BorderThickness="1"
+                    BorderBrush="Gray">
+
+                <TextBlock Text="{Binding Text}"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           FontSize="18"
+                           FontWeight="Bold"/>
+
+              <Border.Styles>
+                <Style Selector="Border">
+                  <Setter Property="Background" Value="#FFF0F0F0" />
+                </Style>
+
+                <Style Selector="Border.IsFlagged">
+                  <Setter Property="Background" Value="#FFFFE680" />
+                </Style>
+
+                <Style Selector="Border.IsRevealed">
+                  <Setter Property="Background" Value="#FF9E9E9E" />
+                </Style>
+              </Border.Styles>
+
+            </Border>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </Viewbox>
+
+    <!-- Statuszsor -->
+    <Border Grid.Row="2" BorderThickness="0,1,0,0" BorderBrush="Black" Padding="5">
+      <StackPanel Orientation="Horizontal">
+        <TextBlock Text="{Binding CurrentPlayer}" FontWeight="Bold" />
+      </StackPanel>
+    </Border>
+
+  </Grid>
+
+</UserControl>
